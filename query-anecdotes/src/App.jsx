@@ -4,9 +4,18 @@ import Notification from './components/Notification'
 import { getAnecdotes, createAnecdote, updateAnecdote } from './requests'
 
 const App = () => {
-  
+  const queryClient = useQueryClient()
+
+  const updateAnecdoteMutation = useMutation({
+    mutationFn: updateAnecdote,
+    onSuccess: (newAnecdote) => {
+      const anecdotes = queryClient.getQueryData(['anecdotes'])
+      queryClient.setQueryData(['anecdotes'], anecdotes.map(a => a.id !== newAnecdote.id ? a : newAnecdote))
+    }
+  })
+
   const handleVote = (anecdote) => {
-    console.log('vote')
+    updateAnecdoteMutation.mutate({...anecdote, votes: anecdote.votes + 1 })
   }
 
   const result = useQuery({
