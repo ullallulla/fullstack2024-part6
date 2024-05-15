@@ -13,15 +13,15 @@ const App = () => {
     onSuccess: (newAnecdote) => {
       const anecdotes = queryClient.getQueryData(['anecdotes'])
       queryClient.setQueryData(['anecdotes'], anecdotes.map(a => a.id !== newAnecdote.id ? a : newAnecdote))
+      dispatch({type: 'SHOW_NOTIFICATION', payload: `you voted for ${newAnecdote.content}`})
+      setTimeout(() => {
+        dispatch({type: 'HIDE_NOTIFICATION'})
+      }, 5000);
     }
   })
 
   const handleVote = (anecdote) => {
     updateAnecdoteMutation.mutate({...anecdote, votes: anecdote.votes + 1 })
-    dispatch({type: 'SHOW_NOTIFICATION', payload: `you voted for ${anecdote.content}`})
-    setTimeout(() => {
-      dispatch({type: 'HIDE_NOTIFICATION'})
-    }, 5000);
   }
 
   const result = useQuery({
